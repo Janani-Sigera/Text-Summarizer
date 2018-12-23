@@ -7,31 +7,28 @@ from nltk.tokenize import RegexpTokenizer
 from nltk import sent_tokenize
 
 
-def corpus_generator(features):
-    # for feature in features:
-        synsets = wordnet.synsets(features)
-        synonyms = [features]
+def corpus_generator(*features):
+        synonyms = []
 
-        for synset in synsets:
-            for hypo in synset.hyponyms():
-                for lem in hypo.lemmas():
-                    synonyms.append(lem.name())
-            # for lem in synset.lemmas():
-            #     synonyms.append(lem.name())
+        for feature in features[0]:
+            synonyms.append(feature)
+            feature = str(feature)
+            synsets = wordnet.synsets(feature)
 
+            for synset in synsets:
+                for hypo in synset.hyponyms():
+                    for lem in hypo.lemmas():
+                        synonyms.append(lem.name())
         synonyms = (set(synonyms))
         return synonyms
 
-def sentence_extracter(features,text):
+def sentence_extracter(features, text):
     sent = []
-
     for hyp in features:
         ext = re.findall(r"([^.]*?" + hyp + "[^.]*\.)", str(text))
         if (ext != []):
             sent.extend(ext)
-
     return sent
-
 
 def summary_ratio(averageTime,text):
     tokenizer = RegexpTokenizer("[\w']+")
@@ -56,13 +53,10 @@ def summary_merge(generalSummary,sentences,text):
     #remove quotes ans slashes from text
     textSentences = sent_tokenize(text)
     textSentsWithoutQuotes= textSentences
-    # textSentsWithoutQuotes = [item.replace('"', '') for item in textSentences]
-    # textSentsWithoutQuotes = [item.replace('/', '') for item in textSentences]
+
 
     for sent in sentences:
         sentWithoutQuotes=sent
-        # sentWithoutQuotes = sent.replace('"','')
-        # sentWithoutQuotes = sentWithoutQuotes.replace('/','')
         sentWithoutQuotes = sentWithoutQuotes.lstrip()
         sentWithoutQuotes = sentWithoutQuotes.rstrip()
 
@@ -84,21 +78,19 @@ def summary_merge(generalSummary,sentences,text):
 
 
 averageTime = int(input("\n Enter average time of user: "))
-word =input("enter word:")
+word = input("Enter personal interests separated by comma ")
+word = word.split(",")
+
+# word =input("enter word:")
 # title,summary = summary_generator(url,averageTime)
 text = input("Enter text: ")
-summary = summary_generator(text,averageTime)
+summary = summary_generator(text, averageTime)
 # print("title:"+title)
 # print()
 # print("\ngeneral summary:"+summary)
-
 features = corpus_generator(word)
-# print(features)
-sentences = sentence_extracter(features,text)
-# print(sentences)
-generalSummarySentences= sent_tokenize(summary)
+# print(corpus_generator(word))
+sentences = sentence_extracter(features, text)
+generalSummarySentences = sent_tokenize(summary)
 print(generalSummarySentences)
-# sent = ""robotics" or "machine learning"),[13] the use of particular tools ("logic" or artificial neural networks ), or deep philosophical differences."
-# print(generalSummarySentences.index("))
-# print(generalSummarySentences.index("Artificial intelligence (AI), sometimes called machine intelligence, is intelligence demonstrated by machines, in contrast to the natural intelligence displayed by humans and other animals. "))
-print(summary_merge(summary,sentences,text))
+print(summary_merge(summary, sentences, text))
