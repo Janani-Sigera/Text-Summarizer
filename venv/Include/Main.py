@@ -9,7 +9,6 @@ from nltk import sent_tokenize
 
 def corpus_generator(*features):
         synonyms = []
-
         for feature in features[0]:
             synonyms.append(feature)
             feature = str(feature)
@@ -34,20 +33,29 @@ def summary_ratio(averageTime,text):
     tokenizer = RegexpTokenizer("[\w']+")
     word = tokenizer.tokenize(text)
     count = len(word)
-    rat = (float)((200*averageTime)/count)
+    rat = (float)((200*averageTime/60)/count)
     return rat
+
+# def summary_ratio(averageTime,text):
+#     tokenizer = RegexpTokenizer("[\w']+")
+#     word = tokenizer.tokenize(text)
+#     count = len(word)
+#     rat = (float)((200*averageTime)/count)
+#     return rat
 
 def summary_generator(text,averageTime):
     # title, text = get_only_text(url)
-    rat= (float)(summary_ratio(averageTime,text))
+
+    # rat= (float)(summary_ratio(averageTime,text))
+    rat = (float)(summary_ratio(averageTime, text))
+
     sum= summarize(str(text), ratio=rat)
     summary = sum.rstrip().replace("\n", " ")
     # return title,summary
     return summary
 
 def summary_merge(generalSummary,sentences,text):
-
-    generalSummarySentences= sent_tokenize(generalSummary)
+    generalSummarySentences = sent_tokenize(generalSummary)
     generalSummarySentsWithoutQuotos = [item.replace('"', '') for item in generalSummarySentences]
     generalSummarySentsWithoutQuotos = [item.replace('/', '') for item in generalSummarySentences]
     #remove quotes ans slashes from text
@@ -56,20 +64,20 @@ def summary_merge(generalSummary,sentences,text):
 
 
     for sent in sentences:
-        sentWithoutQuotes=sent
+        sentWithoutQuotes = sent
         sentWithoutQuotes = sentWithoutQuotes.lstrip()
         sentWithoutQuotes = sentWithoutQuotes.rstrip()
 
-        if not sentWithoutQuotes in generalSummarySentsWithoutQuotos :
+        if not sentWithoutQuotes in generalSummarySentsWithoutQuotos:
             index = textSentsWithoutQuotes.index(sentWithoutQuotes)
-            if index==0:
-                generalSummarySentences.insert(0,sent)
+            if index == 0:
+                generalSummarySentences.insert(0, sent)
             else:
                 for index in range(0):
-                    previousSent= textSentences[index-1]
+                    previousSent = textSentences[index-1]
                     if previousSent in generalSummarySentsWithoutQuotos:
                         previousIndex = generalSummarySentsWithoutQuotos.index(previousSent)
-                        generalSummarySentences.insert(previousIndex+1,sent)
+                        generalSummarySentences.insert(previousIndex+1, sent)
                         break
                     else:
                         index = index - 1
@@ -77,7 +85,7 @@ def summary_merge(generalSummary,sentences,text):
     return generalSummarySentences
 
 
-averageTime = int(input("\n Enter average time of user: "))
+averageTime = int(input("\n Enter average time of user in seconds: "))
 word = input("Enter personal interests separated by comma ")
 word = word.split(",")
 
@@ -86,10 +94,9 @@ word = word.split(",")
 text = input("Enter text: ")
 summary = summary_generator(text, averageTime)
 # print("title:"+title)
-# print()
-# print("\ngeneral summary:"+summary)
+
 features = corpus_generator(word)
-# print(corpus_generator(word))
+print(corpus_generator(word))
 sentences = sentence_extracter(features, text)
 generalSummarySentences = sent_tokenize(summary)
 print(generalSummarySentences)
