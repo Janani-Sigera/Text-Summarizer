@@ -10,6 +10,7 @@ from nltk import sent_tokenize
 def corpus_generator(*features):
         synonyms = []
         for feature in features[0]:
+            feature = feature.strip()
             synonyms.append(feature)
             feature = str(feature)
             synsets = wordnet.synsets(feature)
@@ -21,6 +22,7 @@ def corpus_generator(*features):
         synonyms = (set(synonyms))
         return synonyms
 
+
 def sentence_extracter(features, text):
     sent = []
     for hyp in features:
@@ -29,30 +31,26 @@ def sentence_extracter(features, text):
             sent.extend(ext)
     return sent
 
+
 def summary_ratio(averageTime,text):
     tokenizer = RegexpTokenizer("[\w']+")
     word = tokenizer.tokenize(text)
     count = len(word)
+    if averageTime == null:
+        averageTime = 60
     rat = (float)((200*averageTime/60)/count)
     return rat
 
-# def summary_ratio(averageTime,text):
-#     tokenizer = RegexpTokenizer("[\w']+")
-#     word = tokenizer.tokenize(text)
-#     count = len(word)
-#     rat = (float)((200*averageTime)/count)
-#     return rat
 
 def summary_generator(text,averageTime):
     # title, text = get_only_text(url)
-
-    # rat= (float)(summary_ratio(averageTime,text))
     rat = (float)(summary_ratio(averageTime, text))
 
     sum= summarize(str(text), ratio=rat)
     summary = sum.rstrip().replace("\n", " ")
     # return title,summary
     return summary
+
 
 def summary_merge(generalSummary,sentences,text):
     generalSummarySentences = sent_tokenize(generalSummary)
@@ -61,7 +59,6 @@ def summary_merge(generalSummary,sentences,text):
     #remove quotes ans slashes from text
     textSentences = sent_tokenize(text)
     textSentsWithoutQuotes= textSentences
-
 
     for sent in sentences:
         sentWithoutQuotes = sent
